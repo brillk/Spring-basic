@@ -2,6 +2,7 @@ package hello.core.order;
 
 import hello.core.discount.DiscountPolicy;
 import hello.core.discount.FixDiscountPolicy;
+import hello.core.discount.RateDiscountPolicy;
 import hello.core.member.Member;
 import hello.core.member.MemberRepository;
 import hello.core.member.MemoryMemberRepository;
@@ -9,7 +10,10 @@ import hello.core.member.MemoryMemberRepository;
 public class OrderServiceImpl implements OrderService{
 
     private final MemberRepository memberRepository = new MemoryMemberRepository();
-    private final DiscountPolicy discountPolicy = new FixDiscountPolicy();
+    //private final DiscountPolicy discountPolicy = new FixDiscountPolicy();
+    private DiscountPolicy discountPolicy;
+    // 구현체가 DIP, OCP를 위반하고 있다. 그래서 생성하지 않고 돌렸더니 애러가 나온다 이걸 어떻게 해결해야 될까
+    // 해결 방안: 클라이언트인 OrderServiceImpl에 DiscountPolicy의 구현 객체를 대신 생성하고 주입해줘야 함
 
     @Override
     public Order createOrder(Long memberId, String itemName, int itemPrice) {

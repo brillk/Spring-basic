@@ -43,7 +43,7 @@ public class SingletonTest {
         System.out.println("memberService2 = " + memberService2); //MemberServiceImpl@bccb269  서로 다른 객체 생성
 
         // memberService1 != memberService2
-        assertThat(memberService1).isEqualTo(memberService2);
+        assertThat(memberService1).isNotEqualTo(memberService2);
     }
 
     @Test

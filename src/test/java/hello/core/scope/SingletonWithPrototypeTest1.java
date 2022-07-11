@@ -2,12 +2,14 @@ package hello.core.scope;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Provider;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -36,28 +38,23 @@ public class SingletonWithPrototypeTest1 {
 
         ClientBean clientBean2 = ac.getBean(ClientBean.class);
         int count2 = clientBean2.login();
-        assertThat(count2).isEqualTo(2);
+        assertThat(count2).isEqualTo(1);
 
     }
 
     @Scope("singleton")
     static class ClientBean {
-
-        private final PrototypeBean prototypeBean; // 생성시점에 주입
-
         @Autowired
-        public ClientBean(PrototypeBean prototypeBean) {
-            this.prototypeBean = prototypeBean;
-        }
-
+        public Provider<PrototypeBean> prototypeBeanProvider;
+        // 지정한 빈을 컨테이너에서 대신 찾아주는 DL서비스를 제공하는 건 ObjectProvider
+        // singleton 빈과 프로토타입 빈을 적절히 사용할 수 있다
         public int login() {
+            PrototypeBean prototypeBean = prototypeBeanProvider.get();
+            // get을 통해 항상 새로운 프로토타입 빈이 생성된다. 내부에서 스프링 컨테이너를 통해 해당 빈을 찾아서 반환한다 => DL
             prototypeBean.addCount();
             return prototypeBean.getCount();
         }
     }
-
-
-
     @Scope("prototype")
     static class PrototypeBean {
         private int count = 0;
